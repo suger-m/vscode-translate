@@ -1,0 +1,65 @@
+{
+  "name": "selection-translator",
+  "displayName": "Selection Translator",
+  "publisher": "suger-m",
+  "description": "Translate selected text to Chinese and show it in an inline bubble.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suger-m/selection-translator.git"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:selection-translator.translateSelectionToChinese"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "selection-translator.translateSelectionToChinese",
+        "title": "Translate Selection to Chinese"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "selection-translator.translateSelectionToChinese",
+          "when": "editorHasSelection",
+          "group": "navigation@100"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Selection Translator",
+      "properties": {
+        "selectionTranslator.sourceLanguage": {
+          "type": "string",
+          "default": "en",
+          "description": "Source language code used for MyMemory requests, for example en or ja."
+        },
+        "selectionTranslator.contactEmail": {
+          "type": "string",
+          "default": "",
+          "description": "Optional contact email sent as the de parameter to increase MyMemory free quota."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.6.2",
+    "@types/node": "^20.14.10",
+    "@types/vscode": "^1.74.0",
+    "typescript": "^5.8.3"
+  }
+}
