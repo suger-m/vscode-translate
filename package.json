@@ -1,28 +1,27 @@
 {
   "name": "selection-translator",
   "displayName": "Selection Translator",
+  "description": "Translate selected text with a configurable OpenAI-compatible LLM API (customizable prompt) or the MyMemory fallback, shown in a persistent sidebar panel.",
+  "version": "0.1.0",
   "publisher": "suger-m",
-  "description": "Translate selected text to Chinese and show it in an inline bubble.",
-  "version": "0.0.1",
+  "icon": "media/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/suger-m/selection-translator.git"
+    "url": "https://github.com/suger-m/vscode-translate.git"
   },
+  "license": "MIT",
   "engines": {
-    "vscode": "^1.74.0"
+    "vscode": "^1.86.0"
   },
   "categories": [
     "Other"
-  ],
-  "activationEvents": [
-    "onCommand:selection-translator.translateSelectionToChinese"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "selection-translator.translateSelectionToChinese",
-        "title": "Translate Selection to Chinese"
+        "title": "翻译选中内容为中文 (Translate Selection to Chinese)"
       }
     ],
     "menus": {
@@ -34,18 +33,83 @@
         }
       ]
     },
+    "viewsContainers": {
+      "sidebar": [
+        {
+          "id": "selection-translator",
+          "title": "翻译助手",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "sidebar": [
+        {
+          "id": "selectionTranslator.result",
+          "name": "翻译结果",
+          "type": "webview",
+          "containerId": "selection-translator"
+        }
+      ]
+    },
     "configuration": {
       "title": "Selection Translator",
       "properties": {
+        "selectionTranslator.provider": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "llm",
+            "mymemory"
+          ],
+          "enumDescriptions": [
+            "已配置 LLM 时使用 LLM，否则使用 MyMemory",
+            "强制使用 LLM",
+            "强制使用 MyMemory"
+          ],
+          "default": "auto",
+          "description": "翻译提供方。"
+        },
         "selectionTranslator.sourceLanguage": {
           "type": "string",
           "default": "en",
-          "description": "Source language code used for MyMemory requests, for example en or ja."
+          "description": "源语言。MyMemory 下使用语言代码（如 en、ja）；LLM 下作为提示词中的语言提示，可填写“自动检测”等描述。"
         },
         "selectionTranslator.contactEmail": {
           "type": "string",
           "default": "",
-          "description": "Optional contact email sent as the de parameter to increase MyMemory free quota."
+          "description": "可选。联系邮箱（MyMemory 的 de 参数），可提高 MyMemory 免费配额。"
+        },
+        "selectionTranslator.llm.baseUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1",
+          "description": "OpenAI 兼容服务的 base URL（支持 DeepSeek、Moonshot、Ollama 等）。"
+        },
+        "selectionTranslator.llm.model": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "模型名称。"
+        },
+        "selectionTranslator.llm.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key。留空时从 selectionTranslator.llm.apiKeyEnvVar 指定的环境变量读取。推荐使用环境变量，避免明文写入 settings.json。"
+        },
+        "selectionTranslator.llm.apiKeyEnvVar": {
+          "type": "string",
+          "default": "OPENAI_API_KEY",
+          "description": "读取 API key 的环境变量名。"
+        },
+        "selectionTranslator.llm.prompt": {
+          "type": "string",
+          "default": "你是一名专业翻译。请将下面的文本翻译成{targetLanguage}，直接输出译文，不要添加任何解释或注释。\n源语言提示：{sourceLanguage}\n\n待翻译文本：\n{text}",
+          "markdownDescription": "自定义提示词模板。可用占位符：`{text}`（选中的文本，必填）、`{sourceLanguage}`（源语言提示）、`{targetLanguage}`（目标语言，固定为简体中文）。"
+        },
+        "selectionTranslator.llm.timeoutSeconds": {
+          "type": "number",
+          "minimum": 1,
+          "default": 30,
+          "description": "LLM 请求超时时间（秒）。"
         }
       }
     }
@@ -54,12 +118,14 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "package": "vsce package"
+    "test": "vitest run",
+    "package": "vsce package --out dist"
   },
   "devDependencies": {
-    "@vscode/vsce": "^3.6.2",
     "@types/node": "^20.14.10",
-    "@types/vscode": "^1.74.0",
-    "typescript": "^5.8.3"
+    "@types/vscode": "^1.86.0",
+    "@vscode/vsce": "^3.6.2",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }

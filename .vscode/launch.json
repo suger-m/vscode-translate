@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Selection Inspector",
+      "name": "Run Selection Translator",
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}",
