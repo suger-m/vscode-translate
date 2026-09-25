@@ -37,7 +37,7 @@
       ]
     },
     "viewsContainers": {
-      "sidebar": [
+      "activitybar": [
         {
           "id": "selection-translator",
           "title": "翻译助手",
@@ -46,12 +46,11 @@
       ]
     },
     "views": {
-      "sidebar": [
+      "selection-translator": [
         {
           "id": "selectionTranslator.result",
           "name": "翻译结果",
-          "type": "webview",
-          "containerId": "selection-translator"
+          "type": "webview"
         }
       ]
     },
